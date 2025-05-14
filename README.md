@@ -28,16 +28,46 @@ Visuose konteineriuose ištestuotos trys strategijos:
 
 ---
 
-## Ekrano nuotraukos
+## Rule of Five testas
 
-### Vector versija:
-![Vector](https://github.com/user-attachments/assets/5b3a3eb7-cddc-4401-95ab-6644ab71713a)
+```
+s1 sukurtas:             Testas              Testavicius              9.13
+s2 (kopija s1):          Testas              Testavicius              9.13
+s1 po kopijavimo:        Testas              Testavicius              9.13
+s3 (perkeltas s1):       Testas              Testavicius              9.13
+s1 po perkelimo:         -                   -                        0.00
+s4 (priskirtas s2):      Testas              Testavicius              9.13
+s2 po priskyrimo:        Testas              Testavicius              9.13
+s5 (perkeltas s3):       Testas              Testavicius              9.13
+s3 po perkelimo:         -                   -                        0.00
 
-### List versija:
-![List](https://github.com/user-attachments/assets/92afe394-b512-4bf0-b400-87c4bc84b6dd)
+Galutines objektu busenos:
+s1:                      -                   -                        0.00
+s2:                      Testas              Testavicius              9.13
+s3:                      -                   -                        0.00
+s4:                      Testas              Testavicius              9.13
+s5:                      Testas              Testavicius              9.13
+```
 
-### Deque versija:
-![Deque](https://github.com/user-attachments/assets/16641568-d16d-41fa-afe3-d4af4a5413dd)
+---
+
+## Destruktoriaus testas
+
+```
+Destruktoriaus testas
+Laikinas studentas sukurtas: Testas              Testavicius              7.40
+Isejome is bloko, destruktorius turejo buti iskvieciamas.
+```
+
+---
+
+## Įvesties ir išvesties operatorių testas
+
+```
+Ivesties ir isvesties operatoriu testas
+Nuskaitytas studentas:
+Testas              Testavicius              8.20
+```
 
 ---
 
@@ -51,28 +81,20 @@ Visuose konteineriuose ištestuotos trys strategijos:
 ### Operatorius `<<`
 - Išveda studento duomenis (vardas, pavardė, galutinis balas) lygiuotai į `std::ostream`.
 - Naudojamas išvedimui į ekraną arba į failą.
-
-### Naudojimo scenarijai:
-- Įvedimas:
-  - Rankiniu būdu: `std::cin >> studentas`
-  - Iš failo: `nuskaitytiIsFailo(...)`
-  - Automatiniu būdu: `stringstream >> studentas`
-- Išvedimas:
-  - Į ekraną: `std::cout << studentas`
-  - Į failą: `issaugotiStudentusIFaila(...)`
+- Jei vardas ar pavardė tušti (pvz., po `std::move`), vietoje jų išvedamas `-`.
 
 ---
 
-### Testavime tikrinama:
-- Visi `Rule of Five` metodai: konstruktoriai, priskyrimai, destruktorius.
+## Testavime tikrinama:
+- Visi `Rule of Five` metodai: konstruktoriai, kopijavimas, perkėlimas, destruktorius.
 - Veikiantys operatoriai `>>` ir `<<`.
-- Skaičiavimas `galutinisVidurkis()`.
+- Teisingas galutinio pažymio skaičiavimas su `galutinisVidurkis()`.
 
 ---
 
 ## Failai
 
-- `studentas.h`, `studentai.cpp` – klasė ir metodai
+- `studentas.h`, `studentai.cpp` – klasė ir visi metodai
 - `vector_versija.cpp`, `list_versija.cpp`, `deque_versija.cpp` – strategijų palyginimas
-- `main versiju .cpp` – Rule of Five ir operatorių testai
-- `README.md` – dokumentacija
+- `main` funkcijos – Rule of Five, operatorių testai ir veikimo laiko matavimas
+- `README.md` – ši dokumentacija
