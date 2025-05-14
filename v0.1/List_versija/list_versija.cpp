@@ -1,107 +1,144 @@
-#include "studentas.h"
-#include <list>
-#include <chrono>
+#ifndef STUDENTAS_H
+#define STUDENTAS_H
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <iomanip>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <numeric>
 
-using namespace std;
-using namespace std::chrono;
+using std::ifstream;
+using std::ofstream;
+using std::stringstream;
+using std::getline;
+using std::setw;
+using std::setprecision;
+using std::left;
+using std::right;
+using std::string;
+using std::vector;
+using std::endl;
+using std::cout;
+using std::cerr;
 
-void paleistiStrategija1(const string& failas) {
-    list<Studentas> studentai, vargsiukai, kietiakiai;
-    nuskaitytiIsFailo(studentai, failas);
+class Studentas {
+private:
+    string vardas_;
+    string pavarde_;
+    vector<int> nd_;
+    int egzaminas_;
 
-    auto start = high_resolution_clock::now();
-    skirstymas_1(studentai, vargsiukai, kietiakiai);
-    auto end = high_resolution_clock::now();
+public:
+    Studentas();
+    Studentas(string vardas, string pavarde, vector<int> nd, int egzaminas);
+    Studentas(std::istream& is);
 
-    double trukme = duration<double>(end - start).count();
-    cout << "Strategija 1: " << fixed << setprecision(6) << trukme << " s"
-         << " (vargsiukai: " << vargsiukai.size()
-         << ", kietiakiai: " << kietiakiai.size() << ")" << endl;
+    Studentas(const Studentas& other);                    // Copy constructor
+    Studentas& operator=(const Studentas& other);         // Copy assignment
+    Studentas(Studentas&& other) noexcept;                // Move constructor
+    Studentas& operator=(Studentas&& other) noexcept;     // Move assignment
 
-    issaugotiStudentusIFaila(vargsiukai, "list_vargsiukai1.txt");
-    issaugotiStudentusIFaila(kietiakiai, "list_kietiakiai1.txt");
-}
+    ~Studentas();
 
-void paleistiStrategija2(const string& failas) {
-    list<Studentas> studentai, vargsiukai;
-    nuskaitytiIsFailo(studentai, failas);
+    string vardas() const;
+    string pavarde() const;
+    vector<int> nd() const;
+    int egzaminas() const;
 
-    auto start = high_resolution_clock::now();
-    skirstymas_2(studentai, vargsiukai);
-    auto end = high_resolution_clock::now();
+    double galutinisVidurkis() const;
+    double galutinisMediana() const;
 
-    double trukme = duration<double>(end - start).count();
-    cout << "Strategija 2: " << fixed << setprecision(6) << trukme << " s"
-         << " (vargsiukai: " << vargsiukai.size()
-         << ", kietiakiai: " << studentai.size() << ")" << endl;
+    // Papildomas metodas strategijoms
+    double galutinis() const { return galutinisVidurkis(); }
 
-    issaugotiStudentusIFaila(vargsiukai, "list_vargsiukai2.txt");
-    issaugotiStudentusIFaila(studentai, "list_kietiakiai2.txt");
-}
+    std::istream& read(std::istream& is);
 
-void paleistiStrategija3(const string& failas) {
-    list<Studentas> studentai, vargsiukai;
-    nuskaitytiIsFailo(studentai, failas);
+    friend std::ostream& operator<<(std::ostream& os, const Studentas& s);
+    friend std::istream& operator>>(std::istream& is, Studentas& s);
 
-    auto start = high_resolution_clock::now();
-    skirstymas_3(studentai, vargsiukai);
-    auto end = high_resolution_clock::now();
+    friend bool compare(const Studentas& a, const Studentas& b);
+    friend bool comparePagalPavarde(const Studentas& a, const Studentas& b);
+    friend bool comparePagalEgza(const Studentas& a, const Studentas& b);
+};
 
-    double trukme = duration<double>(end - start).count();
-    cout << "Strategija 3: " << fixed << setprecision(6) << trukme << " s"
-         << " (vargsiukai: " << vargsiukai.size()
-         << ", kietiakiai: " << studentai.size() << ")" << endl;
-
-    issaugotiStudentusIFaila(vargsiukai, "list_vargsiukai3.txt");
-    issaugotiStudentusIFaila(studentai, "list_kietiakiai3.txt");
-}
-
-void testuokStudentas() {
-    std::cout << "TESTAVIMAS PRASIDEDA..." << std::endl;
-
-    vector<int> nd = {10, 9, 8, 7};
-    Studentas s1("Jonas", "Jonaitis", nd, 6);
-    Studentas s2 = s1;              // Copy constructor
-    Studentas s3; s3 = s1;          // Copy assignment
-    Studentas s4 = std::move(s1);   // Move constructor
-    Studentas s5; s5 = std::move(s2); // Move assignment
-
-    std::cout << std::left
-              << std::setw(20) << "Vardas"
-              << std::setw(25) << "Pavarde"
-              << std::setw(10) << "Galutinis" << std::endl;
-
-    std::cout << s3 << std::endl;
-    std::cout << s4 << std::endl;
-    std::cout << s5 << std::endl;
-
-    std::stringstream input("Tomas Tomaitis 7 8 9 10 6");
-    Studentas s6;
-    input >> s6;
-
-    std::cout << s6 << std::endl;
-
-    std::cout << "TESTAVIMAS BAIGTAS" << std::endl;
-}
-
-int main() {
-    vector<string> failai = {
-        //"studentai1000.txt",
-        "studentai10000.txt",
-        "studentai100000.txt",
-        "studentai1000000.txt"
-    };
-
-    for (const auto& failas : failai) {
-        cout << "Failas: " << failas << endl;
-        paleistiStrategija1(failas);
-        paleistiStrategija2(failas);
-        paleistiStrategija3(failas);
-        cout << "---------------------------------------------" << endl;
+// Šabloninės funkcijos darbui su bet kokiu konteineriu
+template <typename Container>
+void nuskaitytiIsFailo(Container& studentai, const string& failoPavadinimas) {
+    ifstream in(failoPavadinimas);
+    if (!in) {
+        cerr << "Klaida: Nepavyko atidaryti failo '" << failoPavadinimas << "'!\n";
+        return;
     }
 
-    testuokStudentas();
+    studentai.clear();
+    string line;
+    getline(in, line); // Skip header
 
-    return 0;
+    while (getline(in, line)) {
+        std::istringstream iss(line);
+        string vardas, pavarde;
+        vector<int> nd(5);
+        int egzaminas;
+
+        iss >> vardas >> pavarde;
+        for (int& pazymys : nd) iss >> pazymys;
+        iss >> egzaminas;
+
+        studentai.emplace_back(vardas, pavarde, nd, egzaminas);
+    }
 }
+
+template <typename Container>
+void skirstymas_1(const Container& visi, Container& vargsiukai, Container& kietiakiai) {
+    for (const auto& s : visi) {
+        if (s.galutinis() < 5.0)
+            vargsiukai.push_back(s);
+        else
+            kietiakiai.push_back(s);
+    }
+}
+
+template <typename Container>
+void skirstymas_2(Container& studentai, Container& vargsiukai) {
+    auto it = std::remove_if(studentai.begin(), studentai.end(), [&](const Studentas& s) {
+        if (s.galutinis() < 5.0) {
+            vargsiukai.push_back(s);
+            return true;
+        }
+        return false;
+    });
+    studentai.erase(it, studentai.end()); // lieka tik kietiakiai
+}
+
+template <typename Container>
+void skirstymas_3(Container& studentai, Container& vargsiukai) {
+    auto it = std::partition(studentai.begin(), studentai.end(), [](const Studentas& s) {
+        return s.galutinis() >= 5.0;
+    });
+    vargsiukai.insert(vargsiukai.end(), it, studentai.end());
+    studentai.erase(it, studentai.end());
+}
+
+template <typename Container>
+void issaugotiStudentusIFaila(const Container& studentai, const string& failoPavadinimas) {
+    ofstream out(failoPavadinimas);
+    if (!out) {
+        cerr << "Klaida: Nepavyko sukurti failo '" << failoPavadinimas << "'!" << endl;
+        return;
+    }
+
+    out << left << setw(20) << "Vardas"
+        << setw(25) << "Pavarde"
+        << setw(10) << "Galutinis" << endl;
+
+    for (const auto& s : studentai) {
+        out << left << setw(20) << s.vardas()
+            << setw(25) << s.pavarde()
+            << std::fixed << setprecision(2) << setw(10) << s.galutinis() << endl;
+    }
+}
+
+#endif
