@@ -1,5 +1,5 @@
 #include "studentas.h"
-#include <deque>
+#include <vector>
 #include <chrono>
 #include <iomanip>
 
@@ -7,7 +7,7 @@ using namespace std;
 using namespace std::chrono;
 
 void paleistiStrategija1(const string& failas) {
-    deque<Studentas> studentai, vargsiukai, kietiakiai;
+    vector<Studentas> studentai, vargsiukai, kietiakiai;
     nuskaitytiIsFailo(studentai, failas);
 
     auto start = high_resolution_clock::now();
@@ -19,12 +19,12 @@ void paleistiStrategija1(const string& failas) {
          << " (vargsiukai: " << vargsiukai.size()
          << ", kietiakiai: " << kietiakiai.size() << ")" << endl;
 
-    issaugotiStudentusIFaila(vargsiukai, "deque_vargsiukai1.txt");
-    issaugotiStudentusIFaila(kietiakiai, "deque_kietiakiai1.txt");
+    issaugotiStudentusIFaila(vargsiukai, "vector_vargsiukai1.txt");
+    issaugotiStudentusIFaila(kietiakiai, "vector_kietiakiai1.txt");
 }
 
 void paleistiStrategija2(const string& failas) {
-    deque<Studentas> studentai, vargsiukai;
+    vector<Studentas> studentai, vargsiukai;
     nuskaitytiIsFailo(studentai, failas);
 
     auto start = high_resolution_clock::now();
@@ -36,12 +36,12 @@ void paleistiStrategija2(const string& failas) {
          << " (vargsiukai: " << vargsiukai.size()
          << ", kietiakiai: " << studentai.size() << ")" << endl;
 
-    issaugotiStudentusIFaila(vargsiukai, "deque_vargsiukai2.txt");
-    issaugotiStudentusIFaila(studentai, "deque_kietiakiai2.txt");
+    issaugotiStudentusIFaila(vargsiukai, "vector_vargsiukai2.txt");
+    issaugotiStudentusIFaila(studentai, "vector_kietiakiai2.txt");
 }
 
 void paleistiStrategija3(const string& failas) {
-    deque<Studentas> studentai, vargsiukai;
+    vector<Studentas> studentai, vargsiukai;
     nuskaitytiIsFailo(studentai, failas);
 
     auto start = high_resolution_clock::now();
@@ -53,37 +53,57 @@ void paleistiStrategija3(const string& failas) {
          << " (vargsiukai: " << vargsiukai.size()
          << ", kietiakiai: " << studentai.size() << ")" << endl;
 
-    issaugotiStudentusIFaila(vargsiukai, "deque_vargsiukai3.txt");
-    issaugotiStudentusIFaila(studentai, "deque_kietiakiai3.txt");
+    issaugotiStudentusIFaila(vargsiukai, "vector_vargsiukai3.txt");
+    issaugotiStudentusIFaila(studentai, "vector_kietiakiai3.txt");
 }
 
 void testuokStudentas() {
-    std::cout << "TESTAVIMAS PRASIDEDA..." << std::endl;
+    cout << "Rule of Five testas\n";
 
-    vector<int> nd = {10, 9, 8, 7};
-    Studentas s1("Jonas", "Jonaitis", nd, 6);
-    Studentas s2 = s1;              // Copy constructor
-    Studentas s3; s3 = s1;          // Copy assignment
-    Studentas s4 = std::move(s1);   // Move constructor
-    Studentas s5; s5 = std::move(s2); // Move assignment
+    Studentas s1("Testas", "Testavicius", {10, 9, 9}, 9.6);
+    cout << left << setw(25) << "s1 sukurtas:" << s1 << endl;
 
-    std::cout << std::left
-              << std::setw(20) << "Vardas"
-              << std::setw(25) << "Pavarde"
-              << std::setw(10) << "Galutinis" << std::endl;
+    Studentas s2(s1); // kopijavimo konstruktorius
+    cout << left << setw(25) << "s2 (kopija s1):" << s2 << endl;
 
-    std::cout << s3 << std::endl;
-    std::cout << s4 << std::endl;
-    std::cout << s5 << std::endl;
+    cout << left << setw(25) << "s1 po kopijavimo:" << s1 << endl;
 
-    std::stringstream input("Tomas Tomaitis 7 8 9 10 6");
-    Studentas s6;
-    input >> s6;
+    Studentas s3(std::move(s1)); // perkėlimo konstruktorius
+    cout << left << setw(25) << "s3 (perkeltas s1):" << s3 << endl;
+    cout << left << setw(25) << "s1 po perkelimo:" << s1 << endl;
 
-    std::cout << s6 << std::endl;
+    Studentas s4 = s2; // kopijavimo priskyrimo operatorius
+    cout << left << setw(25) << "s4 (priskirtas s2):" << s4 << endl;
+    cout << left << setw(25) << "s2 po priskyrimo:" << s2 << endl;
 
-    std::cout << "TESTAVIMAS BAIGTAS" << std::endl;
-}
+    Studentas s5 = std::move(s3); // perkėlimo priskyrimo operatorius
+    cout << left << setw(25) << "s5 (perkeltas s3):" << s5 << endl;
+    cout << left << setw(25) << "s3 po perkelimo:" << s3 << endl;
+
+    cout << "\nGalutines objektu busenos:\n";
+    cout << left << setw(25) << "s1:" << s1 << endl;
+    cout << left << setw(25) << "s2:" << s2 << endl;
+    cout << left << setw(25) << "s3:" << s3 << endl;
+    cout << left << setw(25) << "s4:" << s4 << endl;
+    cout << left << setw(25) << "s5:" << s5 << endl;
+
+    cout << "Rule of Five testas\n";
+    // ... (jau tavo tvarkingai išdėliotas Rule of Five testas)
+
+    cout << "\nDestruktoriaus testas\n";
+    {
+        Studentas laikinas("Testas", "Testavicius", {7, 8, 9}, 7.2);
+            cout << "Laikinas studentas sukurtas: " << laikinas << endl;
+        }
+    cout << "Isejome is bloko, destruktorius turejo buti iskvieciamas.\n";
+
+    cout << "\nIvesties ir isvesties operatoriu testas\n";
+    istringstream fakeInput("Testas Testavicius 10 8 7 9 8");
+    Studentas ivestas;
+    fakeInput >> ivestas;
+
+    cout << "Nuskaitytas studentas:\n" << ivestas << endl;
+    }
 
 int main() {
     vector<string> failai = {

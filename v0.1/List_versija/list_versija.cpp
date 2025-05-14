@@ -1,144 +1,127 @@
-#ifndef STUDENTAS_H
-#define STUDENTAS_H
-
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
+#include "studentas.h"
 #include <vector>
-#include <string>
-#include <algorithm>
-#include <numeric>
+#include <chrono>
+#include <iomanip>
 
-using std::ifstream;
-using std::ofstream;
-using std::stringstream;
-using std::getline;
-using std::setw;
-using std::setprecision;
-using std::left;
-using std::right;
-using std::string;
-using std::vector;
-using std::endl;
-using std::cout;
-using std::cerr;
+using namespace std;
+using namespace std::chrono;
 
-class Studentas {
-private:
-    string vardas_;
-    string pavarde_;
-    vector<int> nd_;
-    int egzaminas_;
+void paleistiStrategija1(const string& failas) {
+    vector<Studentas> studentai, vargsiukai, kietiakiai;
+    nuskaitytiIsFailo(studentai, failas);
 
-public:
-    Studentas();
-    Studentas(string vardas, string pavarde, vector<int> nd, int egzaminas);
-    Studentas(std::istream& is);
+    auto start = high_resolution_clock::now();
+    skirstymas_1(studentai, vargsiukai, kietiakiai);
+    auto end = high_resolution_clock::now();
 
-    Studentas(const Studentas& other);                    // Copy constructor
-    Studentas& operator=(const Studentas& other);         // Copy assignment
-    Studentas(Studentas&& other) noexcept;                // Move constructor
-    Studentas& operator=(Studentas&& other) noexcept;     // Move assignment
+    double trukme = duration<double>(end - start).count();
+    cout << "Strategija 1: " << fixed << setprecision(6) << trukme << " s"
+         << " (vargsiukai: " << vargsiukai.size()
+         << ", kietiakiai: " << kietiakiai.size() << ")" << endl;
 
-    ~Studentas();
-
-    string vardas() const;
-    string pavarde() const;
-    vector<int> nd() const;
-    int egzaminas() const;
-
-    double galutinisVidurkis() const;
-    double galutinisMediana() const;
-
-    // Papildomas metodas strategijoms
-    double galutinis() const { return galutinisVidurkis(); }
-
-    std::istream& read(std::istream& is);
-
-    friend std::ostream& operator<<(std::ostream& os, const Studentas& s);
-    friend std::istream& operator>>(std::istream& is, Studentas& s);
-
-    friend bool compare(const Studentas& a, const Studentas& b);
-    friend bool comparePagalPavarde(const Studentas& a, const Studentas& b);
-    friend bool comparePagalEgza(const Studentas& a, const Studentas& b);
-};
-
-// Šabloninės funkcijos darbui su bet kokiu konteineriu
-template <typename Container>
-void nuskaitytiIsFailo(Container& studentai, const string& failoPavadinimas) {
-    ifstream in(failoPavadinimas);
-    if (!in) {
-        cerr << "Klaida: Nepavyko atidaryti failo '" << failoPavadinimas << "'!\n";
-        return;
-    }
-
-    studentai.clear();
-    string line;
-    getline(in, line); // Skip header
-
-    while (getline(in, line)) {
-        std::istringstream iss(line);
-        string vardas, pavarde;
-        vector<int> nd(5);
-        int egzaminas;
-
-        iss >> vardas >> pavarde;
-        for (int& pazymys : nd) iss >> pazymys;
-        iss >> egzaminas;
-
-        studentai.emplace_back(vardas, pavarde, nd, egzaminas);
-    }
+    issaugotiStudentusIFaila(vargsiukai, "vector_vargsiukai1.txt");
+    issaugotiStudentusIFaila(kietiakiai, "vector_kietiakiai1.txt");
 }
 
-template <typename Container>
-void skirstymas_1(const Container& visi, Container& vargsiukai, Container& kietiakiai) {
-    for (const auto& s : visi) {
-        if (s.galutinis() < 5.0)
-            vargsiukai.push_back(s);
-        else
-            kietiakiai.push_back(s);
-    }
+void paleistiStrategija2(const string& failas) {
+    vector<Studentas> studentai, vargsiukai;
+    nuskaitytiIsFailo(studentai, failas);
+
+    auto start = high_resolution_clock::now();
+    skirstymas_2(studentai, vargsiukai);
+    auto end = high_resolution_clock::now();
+
+    double trukme = duration<double>(end - start).count();
+    cout << "Strategija 2: " << fixed << setprecision(6) << trukme << " s"
+         << " (vargsiukai: " << vargsiukai.size()
+         << ", kietiakiai: " << studentai.size() << ")" << endl;
+
+    issaugotiStudentusIFaila(vargsiukai, "vector_vargsiukai2.txt");
+    issaugotiStudentusIFaila(studentai, "vector_kietiakiai2.txt");
 }
 
-template <typename Container>
-void skirstymas_2(Container& studentai, Container& vargsiukai) {
-    auto it = std::remove_if(studentai.begin(), studentai.end(), [&](const Studentas& s) {
-        if (s.galutinis() < 5.0) {
-            vargsiukai.push_back(s);
-            return true;
+void paleistiStrategija3(const string& failas) {
+    vector<Studentas> studentai, vargsiukai;
+    nuskaitytiIsFailo(studentai, failas);
+
+    auto start = high_resolution_clock::now();
+    skirstymas_3(studentai, vargsiukai);
+    auto end = high_resolution_clock::now();
+
+    double trukme = duration<double>(end - start).count();
+    cout << "Strategija 3: " << fixed << setprecision(6) << trukme << " s"
+         << " (vargsiukai: " << vargsiukai.size()
+         << ", kietiakiai: " << studentai.size() << ")" << endl;
+
+    issaugotiStudentusIFaila(vargsiukai, "vector_vargsiukai3.txt");
+    issaugotiStudentusIFaila(studentai, "vector_kietiakiai3.txt");
+}
+
+void testuokStudentas() {
+    cout << "Rule of Five testas\n";
+
+    Studentas s1("Testas", "Testavicius", {10, 9, 9}, 9.6);
+    cout << left << setw(25) << "s1 sukurtas:" << s1 << endl;
+
+    Studentas s2(s1); // kopijavimo konstruktorius
+    cout << left << setw(25) << "s2 (kopija s1):" << s2 << endl;
+
+    cout << left << setw(25) << "s1 po kopijavimo:" << s1 << endl;
+
+    Studentas s3(std::move(s1)); // perkėlimo konstruktorius
+    cout << left << setw(25) << "s3 (perkeltas s1):" << s3 << endl;
+    cout << left << setw(25) << "s1 po perkelimo:" << s1 << endl;
+
+    Studentas s4 = s2; // kopijavimo priskyrimo operatorius
+    cout << left << setw(25) << "s4 (priskirtas s2):" << s4 << endl;
+    cout << left << setw(25) << "s2 po priskyrimo:" << s2 << endl;
+
+    Studentas s5 = std::move(s3); // perkėlimo priskyrimo operatorius
+    cout << left << setw(25) << "s5 (perkeltas s3):" << s5 << endl;
+    cout << left << setw(25) << "s3 po perkelimo:" << s3 << endl;
+
+    cout << "\nGalutines objektu busenos:\n";
+    cout << left << setw(25) << "s1:" << s1 << endl;
+    cout << left << setw(25) << "s2:" << s2 << endl;
+    cout << left << setw(25) << "s3:" << s3 << endl;
+    cout << left << setw(25) << "s4:" << s4 << endl;
+    cout << left << setw(25) << "s5:" << s5 << endl;
+
+    cout << "Rule of Five testas\n";
+    // ... (jau tavo tvarkingai išdėliotas Rule of Five testas)
+
+    cout << "\nDestruktoriaus testas\n";
+    {
+        Studentas laikinas("Testas", "Testavicius", {7, 8, 9}, 7.2);
+            cout << "Laikinas studentas sukurtas: " << laikinas << endl;
         }
-        return false;
-    });
-    studentai.erase(it, studentai.end()); // lieka tik kietiakiai
-}
+    cout << "Isejome is bloko, destruktorius turejo buti iskvieciamas.\n";
 
-template <typename Container>
-void skirstymas_3(Container& studentai, Container& vargsiukai) {
-    auto it = std::partition(studentai.begin(), studentai.end(), [](const Studentas& s) {
-        return s.galutinis() >= 5.0;
-    });
-    vargsiukai.insert(vargsiukai.end(), it, studentai.end());
-    studentai.erase(it, studentai.end());
-}
+    cout << "\nIvesties ir isvesties operatoriu testas\n";
+    istringstream fakeInput("Testas Testavicius 10 8 7 9 8");
+    Studentas ivestas;
+    fakeInput >> ivestas;
 
-template <typename Container>
-void issaugotiStudentusIFaila(const Container& studentai, const string& failoPavadinimas) {
-    ofstream out(failoPavadinimas);
-    if (!out) {
-        cerr << "Klaida: Nepavyko sukurti failo '" << failoPavadinimas << "'!" << endl;
-        return;
+    cout << "Nuskaitytas studentas:\n" << ivestas << endl;
     }
 
-    out << left << setw(20) << "Vardas"
-        << setw(25) << "Pavarde"
-        << setw(10) << "Galutinis" << endl;
+int main() {
+    vector<string> failai = {
+        //"studentai1000.txt",
+        "studentai10000.txt",
+        "studentai100000.txt",
+        "studentai1000000.txt"
+    };
 
-    for (const auto& s : studentai) {
-        out << left << setw(20) << s.vardas()
-            << setw(25) << s.pavarde()
-            << std::fixed << setprecision(2) << setw(10) << s.galutinis() << endl;
+    for (const auto& failas : failai) {
+        cout << "Failas: " << failas << endl;
+        paleistiStrategija1(failas);
+        paleistiStrategija2(failas);
+        paleistiStrategija3(failas);
+        cout << "---------------------------------------------" << endl;
     }
-}
 
-#endif
+    testuokStudentas();
+
+    return 0;
+}
