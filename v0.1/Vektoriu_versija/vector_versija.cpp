@@ -14,6 +14,10 @@ void paleistiStrategija1(const string& failas) {
     skirstymas_1(studentai, vargsiukai, kietiakiai);
     auto end = high_resolution_clock::now();
 
+    rusiuotiPagalVidurki<vector<Studentas>>(vargsiukai);
+    rusiuotiPagalVidurki<vector<Studentas>>(kietiakiai);
+
+
     double trukme = duration<double>(end - start).count();
     cout << "Strategija 1: " << fixed << setprecision(6) << trukme << " s"
          << " (vargsiukai: " << vargsiukai.size()
@@ -72,6 +76,7 @@ int main() {
         paleistiStrategija3(failas);
         cout << "---------------------------------------------" << endl;
     }
+
 
     return 0;
 }

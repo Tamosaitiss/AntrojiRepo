@@ -132,4 +132,11 @@ void issaugotiStudentusIFaila(const Container& studentai, const string& failoPav
     }
 }
 
+template <typename Container>
+void rusiuotiPagalVidurki(Container& studentai) {
+    std::sort(studentai.begin(), studentai.end(), [](const Studentas& a, const Studentas& b) {
+        return a.galutinis() < b.galutinis(); // Didėjimo tvarka
+    });
+}
+
 #endif

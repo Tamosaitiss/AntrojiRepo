@@ -9,7 +9,10 @@ Studentas::Studentas(std::istream& is) {
     read(is);
 }
 
-Studentas::~Studentas() {}
+Studentas::~Studentas()
+{
+    nd_.clear();
+}
 
 string Studentas::vardas() const { return vardas_; }
 string Studentas::pavarde() const { return pavarde_; }
