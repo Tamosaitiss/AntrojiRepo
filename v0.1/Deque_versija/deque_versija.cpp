@@ -59,7 +59,7 @@ void paleistiStrategija3(const string& failas) {
 
 int main() {
     vector<string> failai = {
-        "studentai1000.txt",
+        //"studentai1000.txt",
         "studentai10000.txt",
         "studentai100000.txt",
         "studentai1000000.txt"
